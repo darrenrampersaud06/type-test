@@ -1,26 +1,24 @@
 /* ═══════════════════════════════════════════════════════════════════
    sound.js — sound-effect layer (placeholder-friendly)
 
-   HOW TO ADD REAL SOUNDS:
-     drop audio files into assets/sounds/ using the names below —
-     nothing else to change, this module finds them on first play.
+   Real sound files ship in assets/sounds/ (generated in-house). To use
+   your own, replace the files — same names — and nothing else changes.
+   If a file is missing or fails to load, play() falls back to a tiny
+   synthesized blip via the Web Audio API.
 
-       assets/sounds/click.mp3    → every correct keypress
-       assets/sounds/error.mp3    → wrong keypress
-       assets/sounds/finish.mp3   → test complete
-       assets/sounds/levelup.mp3  → new personal best
-
-   Until a file exists, play() falls back to a tiny synthesized blip via
-   the Web Audio API, so the toggle is functional out of the box.
+       assets/sounds/click.wav    → every correct keypress
+       assets/sounds/error.wav    → wrong keypress
+       assets/sounds/finish.wav   → test complete
+       assets/sounds/levelup.wav  → new personal best
    ═══════════════════════════════════════════════════════════════════ */
 "use strict";
 
 const Sound = (() => {
   const FILES = {
-    click:   "assets/sounds/click.mp3",
-    error:   "assets/sounds/error.mp3",
-    finish:  "assets/sounds/finish.mp3",
-    levelup: "assets/sounds/levelup.mp3",
+    click:   "assets/sounds/click.wav",
+    error:   "assets/sounds/error.wav",
+    finish:  "assets/sounds/finish.wav",
+    levelup: "assets/sounds/levelup.wav",
   };
 
   // synth fallback parameters: [frequency Hz, duration s, gain]
@@ -31,7 +29,7 @@ const Sound = (() => {
     levelup: [660, 0.35, 0.08],
   };
 
-  let enabled = Store.get("sound", false);
+  let enabled = Store.get("sound", true);   // on by default — toggle in header
   let ctx = null;                       // AudioContext, created lazily on first use
   const cache = new Map();              // name → HTMLAudioElement | "missing"
 

@@ -91,7 +91,7 @@ const Belt = (() => {
     const done = wordEls[activeIndex];
     if (done) {
       done.classList.add("word--done");
-      if (!wasPerfect) done.classList.add("word--flawed");
+      done.classList.add(wasPerfect ? "word--perfect" : "word--flawed");
       // fully hide once it has drifted well past the left edge
       setTimeout(() => done.classList.add("word--gone"), 900);
     }

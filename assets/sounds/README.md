@@ -1,14 +1,14 @@
-# Sound placeholders
+# Sounds
 
-Drop audio files here with these exact names and Jango picks them up
-automatically (no code changes needed — see `js/sound.js`):
+Real sound files ship here (16-bit WAV, synthesized in-house):
 
 | file | plays on |
 |---|---|
-| `click.mp3` | every correct keypress |
-| `error.mp3` | wrong keypress |
-| `finish.mp3` | test complete |
-| `levelup.mp3` | new personal best / signup |
+| `click.wav` | every correct keypress |
+| `error.wav` | wrong keypress |
+| `finish.wav` | test complete |
+| `levelup.wav` | new personal best / signup |
 
-Until the files exist, Jango synthesizes tiny fallback blips with the
-Web Audio API, so the 🔊 toggle works out of the box.
+To use your own sounds, replace any file keeping the same name — `js/sound.js`
+picks them up automatically. If a file is missing or fails to load, Jango
+falls back to a tiny Web Audio synth blip, so sound never breaks.

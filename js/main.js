@@ -50,6 +50,39 @@
 
   const liveKeyboard = Stats.buildKeyboard(document.getElementById("keyboard"));
 
+  /* combo streak — consecutive correct keystrokes */
+  const comboEl = document.getElementById("combo");
+  let streak = 0, bestStreak = 0;
+  function bumpCombo() {
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+    if (streak >= 5) {
+      comboEl.textContent = `🔥 ${streak}`;
+      comboEl.classList.add("is-on");
+      comboEl.classList.remove("pulse");
+      void comboEl.offsetWidth;            // restart the pulse animation
+      comboEl.classList.add("pulse");
+    }
+  }
+  function breakCombo() {
+    if (streak >= 15) {                    // a streak worth mourning
+      comboEl.textContent = "💥";
+      setTimeout(() => comboEl.classList.remove("is-on"), 350);
+    } else {
+      comboEl.classList.remove("is-on");
+    }
+    streak = 0;
+  }
+
+  /* the hint should vanish the moment the zone is focused (click or tab),
+     and come back if you click away before starting */
+  function updateHint() {
+    const show = state === "idle" && document.activeElement !== zone;
+    hint.classList.toggle("is-hidden", !show);
+  }
+  zone.addEventListener("focus", updateHint);
+  zone.addEventListener("blur", updateHint);
+
   /* ── lifecycle ──────────────────────────────────────────────── */
   function reset() {
     clearInterval(timerId);
@@ -74,8 +107,11 @@
     zone.classList.remove("is-typing");
     progress.style.width = "0%";
     progress.classList.remove("is-done");
-    hint.classList.remove("is-hidden");
+    streak = 0; bestStreak = 0;
+    comboEl.classList.remove("is-on");
+    zone.classList.add("is-idle");
     showView("test");
+    updateHint();
   }
 
   function start() {
@@ -84,6 +120,7 @@
     liveBox.classList.add("is-on");
     configBar.classList.add("is-hidden");   // config melts away while typing
     hint.classList.add("is-hidden");
+    zone.classList.remove("is-idle");
     timerId = setInterval(tick, 1000);
   }
 
@@ -162,6 +199,8 @@
       correctChars++;                    // the space itself counts as a correct char
       recordKey(" ", true);
       flashKey(" ");
+      if (perfect) { FX.sparks(1 + Math.min(streak / 60, 1)); bumpCombo(); }
+      else breakCombo();                 // skipped letters end the streak too
       Belt.advance(perfect);
       wordIndex++;
       typed = "";
@@ -187,17 +226,19 @@
     const pos = typed.length;
     typed += e.key;
 
+    flashKey(e.key);                     // on-screen keyboard reacts to every press
     const expected = target[pos];
     if (expected !== undefined) {
       const hit = e.key === expected;
       hit ? correctChars++ : wrongChars++;
       recordKey(expected, hit);
-      if (hit) { Sound.play("click"); flashKey(e.key); }
-      else     { Sound.play("error"); Belt.shake(); }
+      if (hit) { Sound.play("click"); bumpCombo(); }
+      else     { Sound.play("error"); Belt.shake(); breakCombo(); }
     } else {
       wrongChars++;                      // extra chars beyond the word
       Sound.play("error");
       Belt.shake();
+      breakCombo();
     }
 
     Belt.paintActive(target, typed);
@@ -205,6 +246,27 @@
   let armRestart = false;
 
   /* ── results ────────────────────────────────────────────────── */
+  /** Animate a number from 0 to target over ~700ms (ease-out). */
+  function countUp(el, target, suffix = "") {
+    const t0 = performance.now();
+    (function step(now) {
+      const p = Math.min((now - t0) / 700, 1);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+
+  const RANKS = [   // [min wpm, label] — first match from the top wins
+    [130, "⚡ lightning hands"],
+    [100, "🚀 blazing"],
+    [80,  "🏎️ fast fingers"],
+    [60,  "🏃 getting quick"],
+    [40,  "🐢 steady climber"],
+    [20,  "🌱 warming up"],
+    [0,   "🐌 everyone starts somewhere"],
+  ];
+  const rankFor = (w) => RANKS.find(([min]) => w >= min)[1];
+
   function showResults() {
     const finalWpm = Stats.wpm(correctChars, settings.time);
     const raw      = Stats.wpm(keystrokes, settings.time);
@@ -212,8 +274,10 @@
     const cons     = Stats.consistency(wpmSamples);
     const mode     = `${settings.time}s ${settings.punctuation ? "punctuation" : "words"}`;
 
-    document.getElementById("res-wpm").textContent   = finalWpm;
-    document.getElementById("res-acc").textContent   = acc + "%";
+    countUp(document.getElementById("res-wpm"), finalWpm);
+    countUp(document.getElementById("res-acc"), acc, "%");
+    document.getElementById("res-rank").innerHTML =
+      `<b>${rankFor(finalWpm)}</b> · 🔥 longest streak: ${bestStreak} keys`;
     document.getElementById("res-raw").textContent   = raw;
     document.getElementById("res-cons").textContent  = cons + "%";
     document.getElementById("res-chars").textContent = `${correctChars}/${wrongChars}/${missedChars}`;
@@ -242,10 +306,11 @@
 
     // persist + personal-best fanfare
     const prevBest = Stats.bestWpm(Stats.loadUserData());
-    Stats.saveRun({ at: Date.now(), mode, wpm: finalWpm, raw, acc, cons }, missMap);
+    Stats.saveRun({ at: Date.now(), mode, wpm: finalWpm, raw, acc, cons, streak: bestStreak }, missMap);
     const note = document.getElementById("res-save-note");
     if (finalWpm > prevBest && prevBest > 0) {
       Sound.play("levelup");
+      FX.confetti();
       note.textContent = `🏆 new personal best! previous: ${prevBest} wpm`;
     } else {
       note.textContent = Auth.user()

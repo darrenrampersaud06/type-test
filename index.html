@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>" />
+  <link rel="icon" href="assets/images/logo.svg" type="image/svg+xml" />
 </head>
 <body>
 
@@ -21,8 +21,7 @@
   <!-- ══════════════════════ HEADER ══════════════════════ -->
   <header class="header">
     <div class="header__brand" id="brand-home" title="Jango — home">
-      <!-- IMAGE PLACEHOLDER: swap this inline logo for assets/images/logo.svg when ready -->
-      <span class="header__logo" aria-hidden="true">⌨</span>
+      <img class="header__logo" src="assets/images/logo.svg" alt="" width="34" height="34" />
       <h1 class="header__title">jango<span class="header__cursor">_</span></h1>
     </div>
 
@@ -71,7 +70,9 @@
         <div class="belt-zone__fade belt-zone__fade--right"></div>
         <div class="belt__marker" aria-hidden="true"></div>
         <div class="belt" id="belt"><!-- word spans injected by belt.js --></div>
-        <div class="belt-zone__hint" id="belt-hint">click here & start typing to begin</div>
+        <canvas id="fx-belt" class="fx-belt" aria-hidden="true"></canvas>
+        <div class="combo" id="combo" aria-hidden="true"></div>
+        <div class="belt-zone__hint" id="belt-hint">click here, then just start typing ⚡</div>
       </div>
 
       <!-- restart -->
@@ -91,6 +92,7 @@
     <!-- ─────────────── RESULTS VIEW ─────────────── -->
     <section id="view-results" class="view">
       <h2 class="results__heading">run complete<span class="accent">.</span></h2>
+      <p class="results__rank" id="res-rank"></p>
 
       <div class="results__grid">
         <div class="rcard rcard--big">
@@ -184,13 +186,13 @@
     </div>
   </div>
 
+  <!-- full-screen confetti layer (personal bests) -->
+  <canvas id="fx-screen" class="fx-screen" aria-hidden="true"></canvas>
+
   <!--
-    SOUND PLACEHOLDERS ─ drop files into assets/sounds/ with these names and
-    sound.js picks them up automatically (see js/sound.js):
-      assets/sounds/click.mp3   — keypress
-      assets/sounds/error.mp3   — wrong key
-      assets/sounds/finish.mp3  — test complete
-      assets/sounds/levelup.mp3 — new personal best
+    SOUNDS ─ real files live in assets/sounds/ (click/error/finish/levelup
+    .wav). Replace them with your own — same names — and sound.js picks
+    them up automatically.
   -->
 
   <script src="js/words.js"></script>
@@ -198,6 +200,7 @@
   <script src="js/sound.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/stats.js"></script>
+  <script src="js/fx.js"></script>
   <script src="js/belt.js"></script>
   <script src="js/main.js"></script>
 </body>

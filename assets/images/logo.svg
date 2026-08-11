@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="cap" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b3444"/>
+      <stop offset="1" stop-color="#151a21"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd98a"/>
+      <stop offset="1" stop-color="#f7b955"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- keycap -->
+  <rect x="3" y="3" width="58" height="58" rx="14" fill="url(#cap)" stroke="#f7b955" stroke-width="2.5"/>
+  <rect x="10" y="9" width="44" height="42" rx="9" fill="#0d1117" opacity=".6"/>
+  <!-- the letter j -->
+  <text x="32" y="44" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="34"
+        font-weight="700" fill="url(#gold)" text-anchor="middle" filter="url(#glow)">j</text>
+  <!-- belt motion streaks -->
+  <rect x="8"  y="55" width="14" height="2.5" rx="1.25" fill="#f7b955" opacity=".85"/>
+  <rect x="26" y="55" width="9"  height="2.5" rx="1.25" fill="#f7b955" opacity=".5"/>
+  <rect x="39" y="55" width="5"  height="2.5" rx="1.25" fill="#f7b955" opacity=".25"/>
+</svg>
