@@ -1,70 +1,92 @@
-# jango_ ⌨
+# TYPING VELOCITY 🚀
 
-A fast, dark, **conveyor-belt** typing speed test. Words stream across the
-screen from the right, get typed at the golden marker, and fade away off the
-left edge — no static wall of text.
+A **3D space-combat typing simulator**: you sit in a futuristic weapons-training
+cockpit, and your typing charges and fires the ship's laser system. Correct
+streaks fire beams at target drones, mistakes destabilize the weapon, a full
+energy meter overcharges it. Built from scratch with Three.js — every asset
+(planets, asteroids, nebulae, ships, the weapon itself) is procedural. No
+downloaded models, no build step.
 
-## Features
-
-- **Moving word belt** — words ride right→left; typed words blur and vanish
-  off the left edge, upcoming words stream in endlessly from the right
-- **Missed-key analytics** — a live on-screen keyboard heats up (red) on the
-  keys you fumble, plus a ranked "problem keys" list after every run and an
-  all-time heat-map on your profile
-- **GitHub-style progress bar** — a thin green bar across the top of the page
-  fills as your run progresses
-- **Modes** — words-only or punctuation (capitals, `.,!?;:` endings, quotes,
-  parens, hyphenated pairs), over 15 / 30 / 60 / 120 seconds
-- **Accounts** — sign up / log in (salted **SHA-256** password hashing via the
-  Web Crypto API, stored locally); per-user history, best/avg WPM, accuracy,
-  WPM chart, recent-runs table. Guest runs are kept on-device too
-- **Live + final stats** — WPM, raw WPM, accuracy, consistency (coefficient of
-  variation over per-second WPM samples), char breakdown, WPM-over-time chart
-  drawn on a raw `<canvas>` — zero dependencies
-- **Sound hooks** — synthesized fallback blips out of the box; drop real files
-  into `assets/sounds/` to replace them (see the README there)
-- **Keyboard-first** — `tab` + `enter` restarts; click the belt and type
+**Also included:** [`classic/`](classic/) — *jango*, the original 2D
+conveyor-belt typing test. The two link to each other.
 
 ## Running it
 
-It's a static site — no build step, no server:
+Static site — any server works:
 
 ```bash
-# any static server works, e.g.
-python3 -m http.server 8000
-# then open http://localhost:8000
+python3 -m http.server 8000     # → http://localhost:8000
 ```
 
-or just open `index.html` in a browser. Deploys as-is to GitHub Pages.
+Deploys as-is to GitHub Pages. (Modules + import map, so it needs a server or
+Pages — not `file://`.)
+
+## Features
+
+**Missions, your way (never timer-forced)**
+- **TIME** — 15 / 30 / 60 / 120s or any custom duration
+- **WORDS** — 10 → 500 presets or custom up to 5,000 words
+- **UNTIMED ∞** — no countdown at all; type until the word count is done
+- Content: words / sentences / quotes / code · independent toggles for
+  numbers, punctuation, symbols, capitals · four difficulty tiers (expert
+  mixes everything in)
+
+**A real typing engine**
+- Character-level rendering (untyped / current / correct / incorrect /
+  corrected) with a glowing caret (line / block / underline styles)
+- WPM = (correct chars ÷ 5) ÷ minutes, plus raw WPM, CPM, accuracy,
+  consistency (per-second sampling), corrected-character tracking — errors
+  stay in your history even after backspacing
+- Anti-cheat: paste blocked during tests; tab-away auto-pauses
+
+**The combat loop** — `typing → energy → weapon → laser`
+- Perfect words fire pulses; 5-word streaks fire lasers; 10-word streaks fire
+  heavy blasts; finishing triggers a final volley
+- Combo tiers: x5 ENERGY CHARGE → x10 LASER READY → x20 OVERCHARGE →
+  x30 CRITICAL STRIKE → x50 SYSTEM OVERRIDE
+- Weapon energy meter: typing charges it, mistakes drain it, 100% =
+  **WEAPON OVERCHARGED** mega-shot
+- Target drones spawn, get **TARGET LOCK**ed during streaks, and explode with
+  particles + shockwaves
+
+**The world** — procedural starfield (up to 6k stars), layered nebulae,
+two planets (one ringed) with atmospheres, tumbling asteroid belt, distant
+ships, plus infrequent random events (flybys, near-miss asteroids, solar
+flares, radar pings)
+
+**Cockpit HUD** — glass panels with scanning lines, animated radar, virtual
+keyboard with next-key highlight, GitHub-style mission progress bar, warning
+holograms, custom targeting-reticle cursor
+
+**Meta** — cinematic loading → landing → mission config → results flow;
+performance graph (WPM + accuracy over time); personal bests, lifetime
+totals and 8 achievements in localStorage; fully synthesized sound design +
+optional generative ambient music (no audio files, replaceable later)
+
+**Practical** — adaptive quality (auto-detects weak/mobile devices, FPS
+watchdog), reduced-motion mode, 2D canvas fallback when WebGL is missing,
+settings panel for everything, keyboard shortcuts (`Enter` start · `Tab`
+restart · `Esc` pause), mobile soft-keyboard support
 
 ## Project layout
 
 ```
-index.html          app shell (test / results / profile views + auth modal)
-css/style.css       dark theme, belt animation, keyboard heat-map styles
-js/words.js         word bank + punctuation-aware stream generator (xorshift PRNG)
-js/storage.js       namespaced localStorage wrapper
-js/sound.js         sound effects with placeholder auto-discovery + synth fallback
-js/auth.js          salted SHA-256 local accounts + auth UI
-js/stats.js         WPM math, Map-based per-key accuracy, heat-map, canvas charts
-js/belt.js          belt rendering & conveyor motion
-js/main.js          test engine (idle → running → done state machine) + wiring
-assets/sounds/      sound placeholders (see README inside)
-assets/images/      image placeholders (see README inside)
+index.html                  all screens (loading/landing/config/game/results)
+styles/{main,hud}.css       sci-fi UI + cockpit HUD
+vendor/three.*.min.js       Three.js, self-hosted
+src/
+  main.js                   orchestrator: wires typing events → 3D effects
+  bus.js                    event bus (modules never import each other's guts)
+  typing/engine.js          state machine, char states, metrics, sampling
+  typing/textGenerator.js   word banks × difficulty, sentences, quotes, code
+  three/scene.js            renderer, cockpit camera, quality tiers, 2D fallback
+  three/environment.js      stars, nebulae, planets, asteroids, distant ships
+  three/spacecraft.js       the weapon — pure primitives + emissive materials
+  three/particles.js        single pooled GPU particle system
+  three/lasers.js           beam pool, target drones, impacts, shockwaves
+  ui/                       screens, config, typing view, HUD, results, settings
+  game/achievements.js      unlock rules + toasts
+  storage/                  namespaced localStorage: prefs, records
+  audio/sfx.js              synthesized SFX + generative ambient pad
+classic/                    jango — the original 2D belt typing test
 ```
-
-## Under the hood (the CS bits)
-
-- **Hash map** (`Map`) for per-key hit/miss tallies — O(1) per keystroke
-- **Salted SHA-256 hashing** for passwords (Web Crypto), FNV-1a fallback
-- **Arrays** everywhere: pre-sized word batches, WPM sample series, ranked
-  problem keys via `sort` on the entries
-- **Finite-state machine** (`idle → running → done`) driving the test engine
-- **xorshift PRNG** — seedable, so a future "race on identical words" mode
-  is one line away
-- **Standard WPM formula**: `(correct chars ÷ 5) ÷ minutes`; consistency is
-  `100 − coefficient of variation` of per-second WPM samples
-
-> ⚠️ Auth is client-side only (this is a static site) — fine for a personal
-> tool or demo; a real multi-device deployment would move it behind a server
-> with bcrypt/argon2.
