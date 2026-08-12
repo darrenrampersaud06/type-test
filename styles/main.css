@@ -280,6 +280,10 @@ button:disabled { opacity: 0.45; }
 /* ── admin / command override ───────────────────────────────────── */
 .pm-admin { display: none !important; color: var(--amber) !important; }
 body.is-admin .pm-admin { display: block !important; }
+/* the landing hint only shows once you've unlocked the console */
+.admin-hint { display: none; color: var(--amber); opacity: 0.75; }
+.admin-hint b { font-family: var(--font-mono); }
+body.is-admin .admin-hint { display: block; }
 /* compound selector so it beats the generic .overlay-box sizing below */
 .overlay-box.admin-box {
   width: min(780px, 96vw); max-height: 88vh; overflow-y: auto;

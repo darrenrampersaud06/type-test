@@ -7,9 +7,11 @@
    graphs have data, and reset everything.
 
    ACCESS (any one of these):
-     • press  Ctrl + Shift + J
-     • add    ?admin=1  to the URL
-     • type   jango     on the landing screen
+     • type   jango          on the landing screen
+     • click  the JANGO logo 5× on the landing screen
+     • press  Ctrl + Alt + J  (Ctrl+Shift+J also works where the browser
+                               doesn't reserve it for DevTools)
+     • add    ?admin=1        to the URL (&admin=1 if it already has a ?)
 
    Once opened it stays enabled on this device (Store "admin"), which
    also reveals an ADMIN entry in the profile menu. It is deliberately
@@ -92,19 +94,33 @@ export function resetEverything() {
 export function initAdmin({ onLaunch, onRefresh }) {
   if (isAdmin()) document.body.classList.add("is-admin");
 
-  // access routes
+  /* ── access routes ──────────────────────────────────────────────
+     Several, because embedded previews (VS Code Live Preview) and
+     browsers reserve some shortcuts: Ctrl+Shift+J is Chrome DevTools,
+     so Ctrl+Alt+J is the primary chord and there are pointer routes. */
   document.addEventListener("keydown", (e) => {
-    if (e.ctrlKey && e.shiftKey && (e.key === "J" || e.key === "j")) {
+    const j = e.key === "J" || e.key === "j";
+    if (j && e.ctrlKey && (e.altKey || e.shiftKey)) {
       e.preventDefault();
       enableAdmin();
       toggle(true);
     }
   });
+
   let typed = "";
   document.addEventListener("keydown", (e) => {
     if (document.body.dataset.screen !== "landing" || e.key.length !== 1) return;
     typed = (typed + e.key.toLowerCase()).slice(-5);
-    if (typed === "jango") { enableAdmin(); toggle(true); }
+    if (typed === "jango") { typed = ""; enableAdmin(); toggle(true); }
+  });
+
+  // five taps on the landing logo — works on touch and in embedded views
+  let taps = 0, tapTimer = null;
+  document.querySelector(".landing__title")?.addEventListener("click", () => {
+    taps++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => { taps = 0; }, 1200);
+    if (taps >= 5) { taps = 0; enableAdmin(); toggle(true); }
   });
 
   $("#admin-close").addEventListener("click", () => toggle(false));
