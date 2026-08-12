@@ -22,8 +22,9 @@ export const currentScreen = () => current;
 /** Boot checklist — short, cinematic, honest (it really is loading). */
 export function runLoadingSequence(done) {
   const lines = [
+    "WAKING THE JANGO",
     "LOADING STARFIELD",
-    "CALIBRATING WEAPONS",
+    "CALIBRATING GUNNERY SERVOS",
     "INITIALIZING TYPING CORE",
     "SYNCING HUD",
   ];

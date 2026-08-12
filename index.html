@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Typing Velocity — Space Combat Training</title>
-  <meta name="description" content="A 3D space-combat typing simulator: your typing charges the weapons. Timed, word-count and untimed missions, full customization, achievements and local records." />
+  <title>JANGO — Space Combat Typing</title>
+  <meta name="description" content="JANGO: a 3D space-combat typing simulator. Your keyboard controls the ship's weapon system — every correct character is a laser shot. Timed, word-count and untimed missions, accounts, XP, achievements." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -40,9 +40,9 @@
   <!-- ═══════════ LOADING ═══════════ -->
   <section class="screen active" id="screen-loading" aria-label="loading">
     <div class="boot">
-      <p class="boot__head">INITIALIZING SYSTEM<span class="blink">…</span></p>
+      <p class="boot__head">J.A.N.G.O. SYSTEM BOOT<span class="blink">…</span></p>
       <ul id="boot-list"></ul>
-      <p id="boot-ready" class="boot__ready">SYSTEM READY</p>
+      <p id="boot-ready" class="boot__ready">JANGO ONLINE</p>
     </div>
   </section>
 
@@ -50,11 +50,12 @@
   <section class="screen" id="screen-landing" aria-label="start">
     <div class="landing">
       <p class="landing__pre">ORBITAL DEFENSE ACADEMY</p>
-      <h1 class="landing__title">TYPING<br /><span>VELOCITY</span></h1>
-      <p class="landing__sub">SPACE COMBAT TRAINING — YOUR KEYBOARD IS THE WEAPON</p>
-      <button class="cta" id="btn-start" autofocus>▸ START MISSION</button>
+      <h1 class="landing__title">JANGO<span class="landing__cursor">_</span><br /><span>VELOCITY</span></h1>
+      <p class="landing__sub landing__acro"><b>J</b>OINT <b>A</b>RTILLERY &amp; <b>N</b>AVIGATION <b>G</b>UNNERY <b>O</b>PERATIONS</p>
+      <p class="landing__sub">YOUR KEYBOARD IS THE WEAPON — EVERY CHARACTER IS A TARGET</p>
+      <button class="cta" id="btn-start" autofocus>▸ BOARD THE JANGO</button>
       <p class="landing__pb" id="landing-pb"></p>
-      <p class="landing__hint">press <kbd>Enter</kbd> to begin · <a href="classic/" class="classic-link">classic jango mode ⌨</a></p>
+      <p class="landing__hint">press <kbd>Enter</kbd> to begin</p>
     </div>
   </section>
 
@@ -324,8 +325,8 @@
   <!-- ═══════════ ONBOARDING ═══════════ -->
   <div class="overlay" id="onboard-overlay">
     <div class="overlay-box onboard-box">
-      <h3>WELCOME, COMMANDER</h3>
-      <p class="ob-line">Your typing controls the weapon system.</p>
+      <h3>WELCOME ABOARD THE JANGO</h3>
+      <p class="ob-line">You are now piloting <b>J.A.N.G.O.</b> — this ship's weapon system answers to your keyboard.</p>
       <p class="ob-line">Every correct character becomes a <b>target</b> — the gun tracks it, and your keypress <b>fires the laser</b>.</p>
       <p class="ob-line">Type accurately. Build your combo. Charge the weapon. Level up.</p>
       <button class="cta" id="onboard-begin">▸ BEGIN TRAINING</button>

@@ -1,14 +1,13 @@
-# TYPING VELOCITY 🚀
+# JANGO VELOCITY 🚀
 
-A **3D space-combat typing simulator**: you sit in a futuristic weapons-training
-cockpit, and your typing charges and fires the ship's laser system. Correct
-streaks fire beams at target drones, mistakes destabilize the weapon, a full
-energy meter overcharges it. Built from scratch with Three.js — every asset
+**J.A.N.G.O.** — *Joint Artillery & Navigation Gunnery Operations* — is a
+**3D space-combat typing simulator**: you pilot the JANGO's weapon system
+from a futuristic cockpit, and your keyboard IS the trigger. The turret
+tracks the current character, every correct keypress fires a laser at that
+exact letter, streaks fire heavy blasts at target drones, and a full energy
+meter overcharges the gun. Built from scratch with Three.js — every asset
 (planets, asteroids, nebulae, ships, the weapon itself) is procedural. No
 downloaded models, no build step.
-
-**Also included:** [`classic/`](classic/) — *jango*, the original 2D
-conveyor-belt typing test. The two link to each other.
 
 ## Running it
 
@@ -110,5 +109,4 @@ src/
   game/achievements.js      unlock rules + toasts
   storage/                  namespaced localStorage: prefs, records
   audio/sfx.js              synthesized SFX + generative ambient pad
-classic/                    jango — the original 2D belt typing test
 ```

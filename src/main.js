@@ -180,7 +180,7 @@ on("tv:launch", (cfg) => {
     : $("#mission-num").textContent + " — " + $("#mission-name").textContent;
   $("#hud-inf").hidden = cfg.mode !== "untimed";
   go("game");
-  Hud.flashMsg(cfg.mode === "untimed" ? "MISSION TIME ∞ — TYPE AT WILL" : "WEAPONS FREE — BEGIN TYPING");
+  Hud.flashMsg(cfg.mode === "untimed" ? "MISSION TIME ∞ — JANGO AT YOUR COMMAND" : "JANGO WEAPONS FREE — BEGIN TYPING");
   Hud.updateTargetReadout(engine.metrics().nextChar, 0);
   emit("tv:progress", engine.metrics());
   focusMobileInput();

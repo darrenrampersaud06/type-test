@@ -274,11 +274,13 @@ body.reduced .screen.active { animation: none; }
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .landing__sub { color: var(--dim); letter-spacing: 3px; font-size: clamp(11px, 2vw, 14px); margin: 18px 0 34px; }
+.landing__cursor { color: var(--amber); -webkit-text-fill-color: var(--amber); animation: blink 1.1s steps(1) infinite; }
+.landing__acro { margin: 16px 0 4px; color: var(--faint); font-size: clamp(9px, 1.6vw, 11.5px); letter-spacing: 4px; }
+.landing__acro b { color: var(--cyan); font-weight: 600; }
+.landing__acro + .landing__sub { margin-top: 0; }
 .landing__pb { margin-top: 26px; color: var(--dim); font-size: 13px; letter-spacing: 1px; }
 .landing__pb b { color: var(--amber); }
 .landing__hint { margin-top: 10px; color: var(--faint); font-size: 12px; }
-.classic-link { color: var(--dim); }
-.classic-link:hover { color: var(--cyan); }
 
 /* ── buttons ────────────────────────────────────────────────────── */
 .cta {
