@@ -11,6 +11,7 @@ import { Store } from "../storage/store.js";
 import { on } from "../bus.js";
 import { play } from "../audio/sfx.js";
 import { getProgress } from "../game/progression.js";
+import { paintAvatar } from "./avatars.js";
 
 const $ = (s) => document.querySelector(s);
 let mode = "signin";
@@ -98,13 +99,13 @@ export function renderChip() {
   const meta = u?.user_metadata || {};
   const name = u ? (meta.username || (u.email || "pilot").split("@")[0]) : "GUEST";
   const p = getProgress();
-  $("#chip-avatar").textContent = Store.get("avatar", "🧑‍🚀");
+  paintAvatar($("#chip-avatar"));
   $("#chip-name").textContent = name.toUpperCase();
   $("#chip-level").textContent = "LV " + p.level;
   $("#pm-auth").textContent = u ? "SIGN OUT" : (Cloud.cloudConfigured ? "SIGN IN" : "SIGN IN (LOCAL MODE)");
 }
 
-export function initChipMenu({ onProfile, onSettings }) {
+export function initChipMenu({ onProfile, onSettings, onAdmin }) {
   $("#profile-chip").addEventListener("click", () => {
     $("#profile-menu").classList.toggle("open");
     play("ui");
@@ -112,6 +113,7 @@ export function initChipMenu({ onProfile, onSettings }) {
   $("#pm-profile").addEventListener("click", () => { menuClose(); onProfile(); });
   $("#pm-achievements").addEventListener("click", () => { menuClose(); onProfile("achievements"); });
   $("#pm-settings").addEventListener("click", () => { menuClose(); onSettings(); });
+  $("#pm-admin").addEventListener("click", () => { menuClose(); onAdmin?.(); });
   $("#pm-auth").addEventListener("click", async () => {
     menuClose();
     if (Cloud.user()) { await Cloud.signOut(); renderChip(); }

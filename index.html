@@ -33,6 +33,7 @@
       <button id="pm-profile">◈ PROFILE &amp; STATISTICS</button>
       <button id="pm-achievements">★ ACHIEVEMENTS</button>
       <button id="pm-settings">⚙ SETTINGS</button>
+      <button id="pm-admin" class="pm-admin">⚡ COMMAND OVERRIDE</button>
       <button id="pm-auth">⏻ SIGN IN</button>
     </div>
   </div>
@@ -254,7 +255,6 @@
           <em>COMMANDER</em>
           <h2 id="pf-name">GUEST PILOT</h2>
           <p id="pf-sub"></p>
-          <div id="pf-avatars" class="pf-avatars"></div>
         </div>
         <div class="pf-levelbox">
           <b id="pf-level">LEVEL 1</b>
@@ -263,6 +263,11 @@
         </div>
       </div>
 
+      <span class="hud-title">PILOT PORTRAIT</span>
+      <div id="pf-avatars" class="pf-avatars"></div>
+      <p class="pf-avatar-note">these are placeholders — overwrite any file in <code>assets/avatars/</code> with your own image to replace it (see the README there)</p>
+
+      <span class="hud-title">CAREER STATISTICS</span>
       <div class="pf-cards" id="pf-cards"></div>
 
       <div class="pf-graph-head">
@@ -285,7 +290,7 @@
         <tbody></tbody>
       </table>
 
-      <span class="hud-title" id="pf-ach-anchor">ACHIEVEMENTS</span>
+      <span class="hud-title" id="pf-ach-anchor">ACHIEVEMENTS <i class="pf-ach-count" id="pf-ach-count"></i></span>
       <div class="pf-ach" id="pf-ach"></div>
     </div>
   </section>
@@ -350,6 +355,16 @@
     <div class="overlay-box settings-box">
       <h3>SYSTEMS <button class="ghost close" id="btn-close-settings">✕</button></h3>
       <div id="settings-body"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ADMIN / COMMAND OVERRIDE ═══════════ -->
+  <div class="overlay" id="admin-overlay">
+    <div class="overlay-box admin-box">
+      <h3>⚡ COMMAND OVERRIDE <button class="ghost close" id="admin-close">✕</button></h3>
+      <p class="admin-readout" id="admin-readout"></p>
+      <div id="admin-body"></div>
+      <p class="admin-foot">owner console — edits this device's save only · reopen with <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd></p>
     </div>
   </div>
 

@@ -6,30 +6,30 @@
    full achievements grid. Reads whatever the storage layer holds —
    which cloud.js overwrites with database truth on login.
    ═══════════════════════════════════════════════════════════════════ */
-import { Store } from "../storage/store.js";
 import { getRecords } from "../storage/records.js";
 import { getProgress, xpForLevel } from "../game/progression.js";
 import { DEFS, unlockedIds } from "../game/achievements.js";
 import * as Cloud from "../cloud/cloud.js";
 import { play } from "../audio/sfx.js";
 import { renderChip } from "./auth.js";
+import { AVATARS, paintAvatar, currentAvatarId, setAvatarId } from "./avatars.js";
 
 const $ = (s) => document.querySelector(s);
-const AVATARS = ["🧑‍🚀", "🤖", "👨‍✈️", "👽", "🦾", "🛰️"];
 
 let range = "all";   // 7 | 30 | 90 | all
 let sortKey = "at";
 
 export function initProfile() {
-  // avatar picker
+  // avatar picker — image slot if present, emoji fallback otherwise
   const row = $("#pf-avatars");
   AVATARS.forEach(a => {
     const b = document.createElement("button");
     b.className = "avatar-opt";
-    b.textContent = a;
+    b.title = a.label;
+    paintAvatar(b, a.id);
     b.addEventListener("click", () => {
-      Store.set("avatar", a);
-      Cloud.upsertProfile({ avatar: a }).catch(() => {});
+      setAvatarId(a.id);
+      Cloud.upsertProfile({ avatar: a.id }).catch(() => {});
       renderChip();
       renderProfile();
       play("ui");
@@ -55,9 +55,9 @@ export function renderProfile() {
   const u = Cloud.user();
   const meta = u?.user_metadata || {};
 
-  $("#pf-avatar-big").textContent = Store.get("avatar", "🧑‍🚀");
+  paintAvatar($("#pf-avatar-big"));
   document.querySelectorAll(".avatar-opt").forEach(b =>
-    b.classList.toggle("on", b.textContent === Store.get("avatar", "🧑‍🚀")));
+    b.classList.toggle("on", b.dataset.avatarId === currentAvatarId()));
   $("#pf-name").textContent = (meta.display_name || meta.username || "GUEST PILOT").toUpperCase();
   $("#pf-sub").textContent = u
     ? `@${meta.username || (u.email || "").split("@")[0]} · enlisted ${new Date(u.created_at).toLocaleDateString()}`
@@ -139,8 +139,10 @@ function renderHistoryTable(hist) {
 
 function renderAchievements() {
   const have = unlockedIds();
+  $("#pf-ach-count").textContent = `${have.size} / ${DEFS.length} UNLOCKED`;
   $("#pf-ach").innerHTML = DEFS.map(d => `
     <div class="ach ${have.has(d.id) ? "got" : ""}">
-      <b>${have.has(d.id) ? "★" : "🔒"} ${d.name}</b><span>${d.desc}</span>
+      <span class="ach-icon">${have.has(d.id) ? "★" : "🔒"}</span>
+      <div><b>${d.name}</b><span>${d.desc}</span></div>
     </div>`).join("");
 }

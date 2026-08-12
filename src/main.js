@@ -33,6 +33,7 @@ import * as Progress from "./game/progression.js";
 import * as Cloud from "./cloud/cloud.js";
 import * as Auth from "./ui/auth.js";
 import { initProfile, renderProfile } from "./ui/profile.js";
+import * as Admin from "./game/admin.js";
 
 const $ = (s) => document.querySelector(s);
 
@@ -118,8 +119,20 @@ Auth.initChipMenu({
     if (anchor === "achievements") $("#pf-ach-anchor").scrollIntoView({ block: "start" });
   },
   onSettings: () => Screens.overlay("settings-overlay", true),
+  onAdmin: () => Admin.toggle(true),
 });
 Auth.initOnboarding(() => go("config"));
+Admin.initAdmin({
+  onLaunch: (cfg) => { activeDaily = false; emit("tv:launch", cfg); },
+  onRefresh: () => {
+    applyTheme();
+    initSettings();                                    // rebuild theme options
+    Auth.renderChip();
+    paintLandingPB();
+    if (Screens.currentScreen() === "profile") renderProfile();
+    if (Screens.currentScreen() === "config") renderDailyAndGoals();
+  },
+});
 $("#pf-back").addEventListener("click", () => go("config"));
 paintLandingPB();
 Screens.runLoadingSequence(() => setMusicState("menu"));
@@ -317,6 +330,7 @@ document.addEventListener("keydown", (e) => {
   const overlayUp = document.querySelector(".overlay.open");
 
   if (e.key === "Escape") {
+    if (Screens.overlayOpen("admin-overlay")) { Admin.toggle(false); return; }
     if (Screens.overlayOpen("settings-overlay")) { Screens.overlay("settings-overlay", false); return; }
     if (Screens.overlayOpen("auth-overlay")) { Auth.closeAuth(); return; }
     if (scr === "game") togglePause();
