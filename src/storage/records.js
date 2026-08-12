@@ -22,8 +22,12 @@ export function updateRecords(stats) {
   r.tests += 1;
   r.totalWords += stats.words;
   r.totalChars += stats.correct + stats.incorrect;
-  r.history.push({ at: Date.now(), wpm: stats.wpm, acc: stats.acc });
-  if (r.history.length > 50) r.history = r.history.slice(-50);
+  r.totalTime = (r.totalTime || 0) + stats.elapsed;
+  r.history.push({
+    at: Date.now(), wpm: stats.wpm, acc: stats.acc, raw: stats.raw,
+    mode: `${stats.cfg.mode === "time" ? Math.round(stats.cfg.time) + "s" : stats.words + "w"} ${stats.cfg.difficulty}`,
+  });
+  if (r.history.length > 200) r.history = r.history.slice(-200);
   Store.set("records", r);
   return { records: r, broken };
 }

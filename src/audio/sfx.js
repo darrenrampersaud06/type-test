@@ -22,8 +22,9 @@ function ensureCtx() {
 }
 export function setVolumes() {
   if (!ctx) return;
-  sfxGain.gain.value = Settings.sfxVol;
-  musicGain.gain.value = Settings.musicVol;
+  const master = Settings.master ?? 1;
+  sfxGain.gain.value = Settings.sfxVol * master;
+  musicGain.gain.value = Settings.musicVol * master;
 }
 
 /* ── primitive builders ─────────────────────────────────────────── */

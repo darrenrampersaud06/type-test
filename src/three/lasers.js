@@ -92,7 +92,46 @@ export function createLasers(scene, craft, particles) {
     r.mesh.visible = true;
   }
 
+  /* ── targeting guide: faint holographic line, muzzle → current char ── */
+  const guide = new THREE.Mesh(unit, new THREE.MeshBasicMaterial({
+    color: 0x38b6ff, transparent: true, opacity: 0.05, blending: THREE.AdditiveBlending, depthWrite: false,
+  }));
+  guide.visible = false;
+  scene.add(guide);
+
+  const _gFrom = new THREE.Vector3(), _gMid = new THREE.Vector3();
+  function updateGuide(targetPoint, visible) {
+    guide.visible = visible;
+    if (!visible) return;
+    craft.muzzleWorld(_gFrom);
+    const len = _gFrom.distanceTo(targetPoint);
+    _gMid.addVectors(_gFrom, targetPoint).multiplyScalar(0.5);
+    guide.position.copy(_gMid);
+    guide.scale.set(0.006, 0.006, len);
+    guide.lookAt(targetPoint);
+  }
+
   const _from = new THREE.Vector3(), _to = new THREE.Vector3(), _mid = new THREE.Vector3();
+
+  /** Precision shot at an exact world point (one per typed character).
+      kind: {color, width} from the character's weapon category. */
+  function fireAt(point, { color = 0x38b6ff, width = 0.014, life = 0.09, burst = 5 } = {}) {
+    craft.muzzleWorld(_from);
+    _to.copy(point);
+    const b = beams.find(x => x.life <= 0) || beams[0];
+    const len = _from.distanceTo(_to);
+    _mid.addVectors(_from, _to).multiplyScalar(0.5);
+    for (const [mesh, w] of [[b.core, width * 0.5], [b.halo, width * 1.8]]) {
+      mesh.position.copy(_mid);
+      mesh.scale.set(w, w, len);
+      mesh.lookAt(_to);
+      mesh.visible = true;
+    }
+    b.halo.material.color.setHex(color);
+    b.life = b.max = life;
+    particles.spawn(_from, { count: 3, speed: 1.5, color, lifeSec: 0.18 });      // muzzle
+    particles.spawn(_to, { count: burst, speed: 2.2, color, lifeSec: 0.45 });    // letter impact
+  }
 
   /** Fire a beam. power 1..4 */
   function fire(power = 1) {
@@ -151,5 +190,5 @@ export function createLasers(scene, craft, particles) {
     }
   }
 
-  return { fire, update, tryLock, isLocked: () => locked, hasTarget: () => droneAlive };
+  return { fire, fireAt, updateGuide, update, tryLock, isLocked: () => locked, hasTarget: () => droneAlive };
 }

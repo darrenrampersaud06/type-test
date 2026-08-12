@@ -39,6 +39,19 @@ export function initHud() {
   });
 }
 
+/* ── decorative targeting readout (always locked, never gates input) */
+export function updateTargetReadout(ch, index) {
+  if (ch == null) { $("#tgt-char").textContent = "—"; return; }
+  $("#tgt-char").textContent = ch === " " ? "␣" : ch;
+  // stable pseudo-distance per character so the number feels alive
+  $("#tgt-dist").textContent = (820 + ((index * 37) % 900)) + "m";
+}
+
+/* flow state: at high combo the HUD recedes so the text is everything */
+export function setFlow(onOff) {
+  document.body.classList.toggle("flow", onOff);
+}
+
 /* ── energy ─────────────────────────────────────────────────────── */
 export function setEnergy(v, overcharged = false) {
   $("#energy-fill").style.width = Math.round(v) + "%";

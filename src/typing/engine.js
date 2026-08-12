@@ -48,9 +48,17 @@ export class Engine {
     this.combo = 0; this.maxCombo = 0;
     this.wordStreak = 0;
     this.wordsDone = 0;
-    this.wordHadError = false;
     this.samples = [];
     this.missMap = new Map();      // expected char → miss count (per-key analytics)
+  }
+
+  /** Is every typed char of word `wi` currently clean (correct/corrected)? */
+  wordClean(wi) {
+    for (const c of this.chars) {
+      if (c.wi !== wi || c.isSpace) continue;
+      if (c.state === "incorrect") return false;
+    }
+    return true;
   }
 
   /* ── time helpers (pause-aware) ─────────────────────────────── */
@@ -105,17 +113,18 @@ export class Engine {
 
     const hit = ch === cur.ch;
     if (hit) {
+      // wasWrong survives backspacing: fixing a mistake counts as a
+      // correction, never as if the mistake had not happened
       cur.state = cur.wasWrong ? "corrected" : "correct";
       this.correct++;
-      if (cur.wasWrong) this.corrected++;
+      if (cur.wasWrong && !cur.countedCorrection) { this.corrected++; cur.countedCorrection = true; }
       this.combo++;
       if (this.combo > this.maxCombo) this.maxCombo = this.combo;
     } else {
       cur.state = "incorrect";
       cur.wasWrong = true;
-      this.incorrect++;
+      this.incorrect++;                  // permanent — history, not display
       this.combo = 0;
-      this.wordHadError = true;
       this.missMap.set(cur.ch, (this.missMap.get(cur.ch) || 0) + 1);
     }
     this.index++;
@@ -124,10 +133,9 @@ export class Engine {
     // word boundary: we just consumed a space, or the whole text is done
     if (cur.isSpace || this.index >= this.chars.length) {
       const wi = cur.wi;
-      const perfect = !this.wordHadError;
+      const perfect = this.wordClean(wi) && hit;
       this.wordsDone++;
       this.wordStreak = perfect ? this.wordStreak + 1 : 0;
-      this.wordHadError = false;
       emit("tv:word", { perfect, index: wi, streak: this.wordStreak });
     }
 
@@ -136,13 +144,19 @@ export class Engine {
     if (this.index >= this.chars.length) this.finish();
   }
 
-  /** Backspace — only within the current word (can't cross the last space). */
+  /** Backspace — real typing history, crosses word boundaries freely.
+      Visible state reverts; historical errors stay counted. */
   backspace() {
-    if (this.state !== "running") return;
-    const prev = this.chars[this.index - 1];
-    if (!prev || prev.isSpace) return;
+    if (this.state !== "running" || this.index === 0) return;
     this.index--;
-    prev.state = "untyped";
+    const c = this.chars[this.index];
+    if (c.isSpace) {
+      // stepping back into the previous word
+      this.wordsDone = Math.max(0, this.wordsDone - 1);
+      this.wordStreak = 0;               // streak restarts after a rewind
+    }
+    c.state = "untyped";
+    emit("tv:back", { index: this.index });
     emit("tv:progress", this.metrics());
   }
 

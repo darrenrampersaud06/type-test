@@ -39,15 +39,37 @@ Pages — not `file://`.)
   stay in your history even after backspacing
 - Anti-cheat: paste blocked during tests; tab-away auto-pauses
 
-**The combat loop** — `typing → energy → weapon → laser`
-- Perfect words fire pulses; 5-word streaks fire lasers; 10-word streaks fire
-  heavy blasts; finishing triggers a final volley
-- Combo tiers: x5 ENERGY CHARGE → x10 LASER READY → x20 OVERCHARGE →
-  x30 CRITICAL STRIKE → x50 SYSTEM OVERRIDE
-- Weapon energy meter: typing charges it, mistakes drain it, 100% =
-  **WEAPON OVERCHARGED** mega-shot
-- Target drones spawn, get **TARGET LOCK**ed during streaks, and explode with
-  particles + shockwaves
+**The combat loop** — `key → engine → gun → laser → letter impact`
+- **The gun shoots every character you type.** The turret continuously
+  tracks the current letter (targeting brackets + guide line + HUD readout),
+  and each correct keypress fires a laser at that letter's exact screen
+  position — impact particles, letter flash-apart, spring recoil with
+  micro-vibration that scales with combo, optional haptic feedback
+- Different weapons per character class: standard laser (letters), charged
+  laser (capitals), energy bolt (numbers), precision beam (punctuation),
+  plasma (symbols)
+- Wrong key: no shot — red warning pulse, cockpit stutter, combo break;
+  Backspace rewinds real typing history (across words) and the gun
+  physically re-tracks backward while errors stay in your accuracy history
+- 5-word streaks fire heavy lasers, 10-word streaks fire blasts, finishing
+  triggers a final volley; combo tiers x5 → x50 SYSTEM OVERRIDE; full energy
+  = **WEAPON OVERCHARGED**; target drones get **TARGET LOCK**ed and explode
+- **Flow state**: at x30+ combo the HUD fades away and the environment
+  intensifies — your skill visibly powers the ship
+
+**Progression & accounts**
+- XP + levels (cosmetic theme unlocks), daily mission with 🔥 streaks,
+  daily goals, 13 achievements, sci-fi avatar picker
+- Commander profile: analytics cards, WPM/accuracy trend graph with
+  7/30/90-day ranges, sortable mission history, achievements grid
+- **Real accounts (Supabase)**: email+password and Google sign-in, profiles,
+  results, achievements and preferences in a real database with Row Level
+  Security; offline-first with a sync queue. One-time setup in
+  [README-CLOUD.md](README-CLOUD.md) — until then everything runs in
+  LOCAL MODE on-device
+- **Replaceable music**: drop `menu/gameplay/results/record.mp3` into
+  `audio/music/` — states crossfade, missing files fall back to the
+  generative pad (see the README there)
 
 **The world** — procedural starfield (up to 6k stars), layered nebulae,
 two planets (one ringed) with atmospheres, tumbling asteroid belt, distant

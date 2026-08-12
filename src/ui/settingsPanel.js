@@ -3,26 +3,34 @@
    Every control is generated from SCHEMA, writes into Settings, saves
    to localStorage and emits "tv:settings" so live systems can react.
    ═══════════════════════════════════════════════════════════════════ */
-import { Settings, saveSettings } from "../storage/prefs.js";
+import { Settings, saveSettings, THEMES } from "../storage/prefs.js";
 import { emit } from "../bus.js";
 import { play, setVolumes, music } from "../audio/sfx.js";
+import { getProgress } from "../game/progression.js";
 
 const SCHEMA = [
   { section: "GRAPHICS" },
   { key: "quality", label: "Quality", type: "select", options: ["auto", "low", "medium", "high", "ultra"], note: "applies on next reload" },
+  { key: "theme", label: "Theme", type: "theme" },
   { key: "particles", label: "Particles", type: "toggle" },
   { key: "shake", label: "Screen shake", type: "toggle" },
   { key: "lasers", label: "Laser effects", type: "toggle" },
   { section: "AUDIO" },
+  { key: "master", label: "Master volume", type: "range" },
   { key: "sound", label: "Sound effects", type: "toggle" },
   { key: "sfxVol", label: "SFX volume", type: "range" },
-  { key: "music", label: "Ambient music", type: "toggle" },
+  { key: "music", label: "Music", type: "toggle", note: "drop your tracks in audio/music/ — see the README there" },
   { key: "musicVol", label: "Music volume", type: "range" },
-  { section: "INTERFACE" },
-  { key: "reducedMotion", label: "Reduced motion", type: "toggle" },
+  { section: "GAMEPLAY" },
+  { key: "flow", label: "Flow state (HUD fades at high combo)", type: "toggle" },
+  { key: "haptics", label: "Haptic feedback (supported devices)", type: "toggle" },
   { key: "keyboard", label: "Virtual keyboard", type: "toggle" },
-  { key: "radar", label: "Radar display", type: "toggle" },
   { key: "caret", label: "Caret style", type: "select", options: ["line", "block", "underline"] },
+  { section: "ACCESSIBILITY" },
+  { key: "reducedMotion", label: "Reduced motion", type: "toggle" },
+  { key: "highContrast", label: "High contrast", type: "toggle" },
+  { key: "textSize", label: "Typing text size", type: "select", options: ["s", "m", "l"] },
+  { key: "radar", label: "Radar display", type: "toggle" },
 ];
 
 export function initSettings() {
@@ -50,6 +58,18 @@ export function initSettings() {
       c.addEventListener("change", () => apply(item.key, c.checked));
       l.append(c, Object.assign(document.createElement("i"), {}));
       row.appendChild(l);
+    } else if (item.type === "theme") {
+      const s = document.createElement("select");
+      const lvl = getProgress().level;
+      for (const [id, t] of Object.entries(THEMES)) {
+        const locked = lvl < t.minLevel;
+        const o = new Option(locked ? `🔒 ${t.label} (LV ${t.minLevel})` : t.label, id);
+        o.disabled = locked;
+        s.add(o);
+      }
+      s.value = Settings.theme;
+      s.addEventListener("change", () => apply("theme", s.value));
+      row.appendChild(s);
     } else if (item.type === "select") {
       const s = document.createElement("select");
       for (const o of item.options) s.add(new Option(o.toUpperCase(), o));
@@ -81,7 +101,6 @@ function apply(key, value) {
   Settings[key] = value;
   saveSettings();
   play("ui");
-  if (key === "sfxVol" || key === "musicVol") setVolumes();
-  if (key === "music") music(value);
-  emit("tv:settings", { key, value });
+  if (["sfxVol", "musicVol", "master"].includes(key)) setVolumes();
+  emit("tv:settings", { key, value });   // main reacts (music state, theme, …)
 }

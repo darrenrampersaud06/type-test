@@ -62,6 +62,8 @@ export function createSpace(canvas) {
   let shakeAmt = 0;
   const mouse = { x: 0, y: 0 };
   let typeKick = 0;            // tiny nudge when a key lands
+  let intensity = 0;           // 0..1 performance heat → fov / lights / speed
+  let fovPulse = 0;            // brief cinematic fov kick
 
   window.addEventListener("pointermove", (e) => {
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -93,6 +95,15 @@ export function createSpace(canvas) {
     if (typeKick > 0.001) { camera.position.z = -typeKick; typeKick *= 0.8; }
     else camera.position.z = 0;
 
+    // performance heat: subtle fov widen + warmer rim light
+    if (fovPulse > 0.01) fovPulse *= Math.exp(-dt * 2.2);
+    const targetFov = 62 + intensity * 4 + fovPulse;
+    if (Math.abs(camera.fov - targetFov) > 0.02) {
+      camera.fov += (targetFov - camera.fov) * Math.min(dt * 4, 1);
+      camera.updateProjectionMatrix();
+    }
+    rim.intensity = 1.4 + intensity * 1.6;
+
     renderer.render(scene, camera);
 
     // fps watchdog (checks ~every 3s)
@@ -123,6 +134,16 @@ export function createSpace(canvas) {
     onFrame: (fn) => updaters.add(fn),
     shake(amount) { if (Settings.shake && !Settings.reducedMotion) shakeAmt = Math.max(shakeAmt, amount); },
     typeKick() { if (!Settings.reducedMotion) typeKick = 0.02; },
+    setIntensity(v) { intensity = Settings.reducedMotion ? 0 : Math.max(0, Math.min(1, v)); },
+    getIntensity: () => intensity,
+    pulseFov(deg) { if (!Settings.reducedMotion) fovPulse = deg; },
+    /** viewport pixel coords → world point at `dist` in front of the camera */
+    screenToWorld(px, py, dist = 16, out = new THREE.Vector3()) {
+      out.set((px / window.innerWidth) * 2 - 1, -(py / window.innerHeight) * 2 + 1, 0.5);
+      out.unproject(camera);
+      out.sub(camera.position).normalize();
+      return out.multiplyScalar(dist).add(camera.position);
+    },
     /** brief "solar flare" random event — sun intensity swells */
     flare() {
       const base = sun.intensity;
@@ -168,5 +189,6 @@ function create2DFallback(canvas) {
     quality: QUALITIES.low, qualityName: "low",
     onFrame: (fn) => updaters.add(fn),
     shake: noop, typeKick: noop, flare: noop,
+    setIntensity: noop, getIntensity: () => 0, pulseFov: noop, screenToWorld: () => null,
   };
 }
