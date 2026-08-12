@@ -12,6 +12,7 @@
    re-tracks backward → user corrects and continues.
    ═══════════════════════════════════════════════════════════════════ */
 import { on, emit } from "./bus.js";
+import { Store } from "./storage/store.js";
 import { Settings, Mission, applyTheme, themeAccent } from "./storage/prefs.js";
 import { getRecords } from "./storage/records.js";
 import { play, setVolumes } from "./audio/sfx.js";
@@ -33,7 +34,6 @@ import * as Progress from "./game/progression.js";
 import * as Cloud from "./cloud/cloud.js";
 import * as Auth from "./ui/auth.js";
 import { initProfile, renderProfile } from "./ui/profile.js";
-import * as Admin from "./game/admin.js";
 
 const $ = (s) => document.querySelector(s);
 
@@ -119,23 +119,22 @@ Auth.initChipMenu({
     if (anchor === "achievements") $("#pf-ach-anchor").scrollIntoView({ block: "start" });
   },
   onSettings: () => Screens.overlay("settings-overlay", true),
-  onAdmin: () => Admin.toggle(true),
 });
 Auth.initOnboarding(() => go("config"));
-Admin.initAdmin({
-  onLaunch: (cfg) => { activeDaily = false; emit("tv:launch", cfg); },
-  onRefresh: () => {
-    applyTheme();
-    initSettings();                                    // rebuild theme options
-    Auth.renderChip();
-    paintLandingPB();
-    if (Screens.currentScreen() === "profile") renderProfile();
-    if (Screens.currentScreen() === "config") renderDailyAndGoals();
-  },
-});
 $("#pf-back").addEventListener("click", () => go("config"));
 paintLandingPB();
-Screens.runLoadingSequence(() => setMusicState("menu"));
+Screens.runLoadingSequence(() => { setMusicState("menu"); consumeOwnerPreview(); });
+
+/* The owner console (admin.html) can queue a mission to inspect; it is
+   consumed once and only when ?preview=1 is present, so a normal
+   visitor's session is never affected by it. */
+function consumeOwnerPreview() {
+  if (!new URLSearchParams(location.search).has("preview")) return;
+  const queued = Store.get("adminPreview", null);
+  if (!queued?.cfg) return;
+  Store.set("adminPreview", null);
+  emit("tv:launch", queued.cfg);
+}
 
 function paintLandingPB() {
   const r = getRecords();
@@ -330,7 +329,6 @@ document.addEventListener("keydown", (e) => {
   const overlayUp = document.querySelector(".overlay.open");
 
   if (e.key === "Escape") {
-    if (Screens.overlayOpen("admin-overlay")) { Admin.toggle(false); return; }
     if (Screens.overlayOpen("settings-overlay")) { Screens.overlay("settings-overlay", false); return; }
     if (Screens.overlayOpen("auth-overlay")) { Auth.closeAuth(); return; }
     if (scr === "game") togglePause();

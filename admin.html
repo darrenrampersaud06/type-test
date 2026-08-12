@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JANGO — Command Override</title>
+  <!-- keep this page out of search engines entirely -->
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/admin.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+</head>
+<body class="admin-page" data-screen="admin">
+
+  <!-- ═══════════ LOCK SCREEN ═══════════ -->
+  <section id="lock" class="lock">
+    <div class="lock-box">
+      <p class="lock-pre">JANGO ORBITAL DEFENSE</p>
+      <h1 class="lock-title">COMMAND<br /><span>OVERRIDE</span></h1>
+      <p class="lock-sub">restricted — owner authorization required</p>
+
+      <form id="lock-form" autocomplete="off">
+        <label class="afield">
+          <span>ACCESS CODE</span>
+          <input id="lock-pass" type="password" autocomplete="current-password" autofocus />
+        </label>
+        <p id="lock-error" class="auth-note" hidden></p>
+        <button class="cta" type="submit" id="lock-submit">▸ AUTHENTICATE</button>
+      </form>
+
+      <p id="lock-owner-note" class="lock-note" hidden></p>
+
+      <div id="lock-setup" class="lock-setup" hidden>
+        <p class="lock-note">
+          ⚠ <b>No access code is set yet</b>, so this console is sealed.
+          Generate one below, paste the two lines into <code>admin-config.js</code>,
+          then reload.
+        </p>
+      </div>
+
+      <details class="lock-gen">
+        <summary>generate a hash for a new access code</summary>
+        <label class="afield">
+          <span>NEW ACCESS CODE</span>
+          <input id="gen-pass" type="text" placeholder="choose something long" />
+        </label>
+        <button class="ghost" id="gen-btn" type="button">GENERATE</button>
+        <pre id="gen-out" hidden></pre>
+        <p class="lock-note">Paste those two lines into <code>admin-config.js</code>. Your
+        password is never stored — only this salted SHA-256 hash.</p>
+      </details>
+
+      <p class="lock-foot"><a href="index.html">← back to JANGO</a></p>
+    </div>
+  </section>
+
+  <!-- ═══════════ CONSOLE ═══════════ -->
+  <section id="console" class="console" hidden>
+    <header class="con-head">
+      <div>
+        <h1>⚡ COMMAND OVERRIDE</h1>
+        <p class="con-sub" id="con-who"></p>
+      </div>
+      <div class="con-actions">
+        <a class="ghost" href="index.html" target="_blank" rel="noopener">▸ OPEN JANGO</a>
+        <button class="ghost" id="btn-lock">⏻ LOCK</button>
+      </div>
+    </header>
+
+    <!-- sandbox state: protects the real save -->
+    <div class="sandbox" id="sandbox-bar">
+      <div>
+        <b id="sandbox-state">SANDBOX ARMED</b>
+        <span id="sandbox-desc">your real save is backed up — changes here can be rolled back</span>
+      </div>
+      <div class="sandbox-btns">
+        <button class="admin-btn" id="btn-restore">↺ RESTORE MY SAVE</button>
+        <button class="admin-btn" id="btn-keep">✓ KEEP CHANGES</button>
+      </div>
+    </div>
+
+    <p class="admin-readout" id="admin-readout"></p>
+    <div id="admin-body"></div>
+
+    <p class="admin-foot">
+      This console edits <b>this browser's</b> JANGO save only. Players on their own
+      devices are never affected. See <b>README-ADMIN.md</b> for how to keep it private.
+    </p>
+  </section>
+
+  <script src="config.js"></script>
+  <script src="admin-config.js"></script>
+  <script src="vendor/supabase.js" defer></script>
+  <script type="module" src="src/admin/console.js"></script>
+</body>
+</html>

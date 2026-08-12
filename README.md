@@ -89,6 +89,13 @@ watchdog), reduced-motion mode, 2D canvas fallback when WebGL is missing,
 settings panel for everything, keyboard shortcuts (`Enter` start · `Tab`
 restart · `Esc` pause), mobile soft-keyboard support
 
+## Owner console
+
+A private control panel lives at `admin.html` — level/theme/achievement
+unlocks, mission previews and test-data seeding, behind an access code you
+set yourself. The game contains no link or shortcut to it. Setup and
+security notes: [README-ADMIN.md](README-ADMIN.md).
+
 ## Project layout
 
 ```

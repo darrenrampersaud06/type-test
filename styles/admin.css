@@ -1,0 +1,102 @@
+/* ═══════════════════════════════════════════════════════════════════
+   admin.css — the standalone owner console (admin.html only)
+   ═══════════════════════════════════════════════════════════════════ */
+body.admin-page {
+  overflow-y: auto; cursor: auto; height: auto; min-height: 100vh;
+  background:
+    radial-gradient(900px 500px at 50% -10%, #17202e 0%, transparent 60%),
+    var(--bg);
+  padding: 40px 20px 60px;
+}
+
+/* ── lock screen ────────────────────────────────────────────────── */
+.lock { display: flex; justify-content: center; }
+.lock-box {
+  width: min(460px, 94vw);
+  background: var(--panel); border: 1px solid var(--line);
+  padding: 34px clamp(20px, 5vw, 40px) 28px;
+  backdrop-filter: blur(10px);
+}
+.lock-pre { color: var(--faint); letter-spacing: 5px; font-size: 10.5px; }
+.lock-title {
+  font-family: var(--font-display); font-weight: 900; line-height: 1;
+  font-size: clamp(28px, 6vw, 40px); letter-spacing: 3px; margin: 10px 0 6px;
+}
+.lock-title span { color: var(--amber); }
+.lock-sub { color: var(--dim); font-size: 13px; letter-spacing: 2px; margin-bottom: 24px; }
+.lock-note { color: var(--dim); font-size: 12.5px; line-height: 1.55; margin-top: 14px; }
+.lock-note b { color: var(--amber); }
+.lock-note code, .lock-gen code {
+  font-family: var(--font-mono); color: var(--cyan-hi); font-size: 12px;
+}
+.lock-setup { border-left: 2px solid var(--amber); padding-left: 12px; margin-top: 18px; }
+.lock-gen {
+  margin-top: 22px; border-top: 1px solid var(--line); padding-top: 14px;
+}
+.lock-gen summary {
+  color: var(--faint); font-size: 12px; letter-spacing: 1.5px; cursor: pointer;
+  margin-bottom: 14px;
+}
+.lock-gen summary:hover { color: var(--cyan); }
+#gen-out {
+  font-family: var(--font-mono); font-size: 12px; color: var(--green);
+  background: rgba(2, 8, 16, 0.9); border: 1px solid var(--line);
+  padding: 12px; margin-top: 12px; white-space: pre-wrap; word-break: break-all;
+}
+.lock-foot { margin-top: 22px; font-size: 12px; }
+.lock-foot a { color: var(--dim); }
+.lock-foot a:hover { color: var(--cyan); }
+
+/* ── console ────────────────────────────────────────────────────── */
+.console {
+  width: min(920px, 96vw); margin: 0 auto;
+  background: var(--panel); border: 1px solid var(--line);
+  backdrop-filter: blur(10px); padding: 26px clamp(18px, 4vw, 34px) 30px;
+}
+.con-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px; flex-wrap: wrap; padding-bottom: 18px;
+  border-bottom: 1px solid var(--line); margin-bottom: 18px;
+}
+.con-head h1 {
+  font-family: var(--font-display); font-size: clamp(18px, 3vw, 24px);
+  letter-spacing: 4px; color: var(--amber);
+}
+.con-sub { color: var(--dim); font-size: 12.5px; margin-top: 5px; font-family: var(--font-mono); }
+.con-actions { display: flex; gap: 8px; align-items: center; }
+.con-actions .ghost { text-decoration: none; display: inline-block; }
+
+/* sandbox bar */
+.sandbox {
+  display: flex; justify-content: space-between; align-items: center; gap: 14px;
+  flex-wrap: wrap;
+  border: 1px solid rgba(89, 255, 157, 0.35); background: rgba(8, 40, 24, 0.35);
+  padding: 12px 16px; margin-bottom: 16px;
+}
+.sandbox.clean { border-color: rgba(255, 209, 102, 0.35); background: rgba(40, 30, 8, 0.25); }
+.sandbox b {
+  display: block; font-family: var(--font-display); font-size: 12.5px;
+  letter-spacing: 3px; color: var(--green); margin-bottom: 3px;
+}
+.sandbox.clean b { color: var(--amber); }
+.sandbox span { color: var(--dim); font-size: 12px; }
+.sandbox-btns { display: flex; gap: 8px; }
+
+.admin-page .admin-readout { margin-bottom: 18px; }
+.admin-page .admin-row { grid-template-columns: 110px 1fr; }
+.admin-page #admin-body h4 { margin: 22px 0 10px; }
+
+/* toast */
+#con-toast {
+  position: fixed; right: 20px; bottom: 20px; z-index: 300;
+  background: var(--panel-solid); border: 1px solid var(--cyan);
+  border-left-width: 4px; padding: 12px 18px; color: var(--text);
+  font-family: var(--font-mono); font-size: 13px;
+  transform: translateX(130%); transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+#con-toast.on { transform: translateX(0); }
+
+@media (max-width: 640px) {
+  .admin-page .admin-row { grid-template-columns: 1fr; }
+  .sandbox { flex-direction: column; align-items: flex-start; }
+}
